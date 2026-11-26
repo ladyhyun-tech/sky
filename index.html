@@ -44,10 +44,10 @@ a{color:var(--ac)}
 <script>
 var STU=[{c:'minjun-k7x2p9',n:'김민준'},{c:'seoyeon-m3q8d1',n:'이서연'}];
 var SUB={main:{n:'메인',e:'🏠',g:'--ko',t:'Welcome'},en:{n:'영어',e:'🔤',g:'--en',t:'English'},ma:{n:'수학',e:'➗',g:'--ma',t:'Math'},ko:{n:'국어',e:'📖',g:'--ko',t:'Korean'},ga:{n:'갤러리',e:'📷',g:'--ga',t:'Gallery'}};
-var D={},B={},AI='',LG='',tab='main',teacher=false,authed=false,login=false,perr=false;
+var D={},B={},AI='',LG='',tab='main',teacher=false,authed=false,login=false,perr=false,cf='';
 try{D=JSON.parse(localStorage.getItem('acad')||'{}')}catch(e){}
 if(!D.p){D.p={'minjun-k7x2p9':{en:[{d:'11/18',t:'Unit 5 단어 20개 암기, 본문 읽기 완료. 발음이 많이 좋아졌어요!',s:'',v:'',r:[{n:'김민준 엄마',t:'확인했습니다. 집에서도 복습시킬게요.'}]}],ma:[{d:'11/19',t:'분수의 덧셈 연습. 통분 과정에서 실수가 있어 오답노트 숙제입니다.',s:'',v:'',r:[]}],ko:[]},'seoyeon-m3q8d1':{en:[],ma:[],ko:[]}};D.g={}}
-function save(){try{localStorage.setItem('acad',JSON.stringify({p:D.p,bt:D.bt,mm:D.mm,am:D.am,ln:D.ln,cp:D.cp,pw:D.pw}))}catch(e){}}D.g=D.g||{};
+function save(){try{localStorage.setItem('acad',JSON.stringify({p:D.p,bt:D.bt,mm:D.mm,am:D.am,ln:D.ln,cp:D.cp,pw:D.pw,st:D.st,del:D.del}))}catch(e){}}D.g=D.g||{};(D.st||[]).forEach(function(s){STU.push(s)});STU=STU.filter(function(s){return(D.del||[]).indexOf(s.c)<0});
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function cur(){var h=location.hash.slice(1);return STU.filter(function(s){return s.c===h})[0]||null}
 function render(){
@@ -58,8 +58,9 @@ function render(){
   if(teacher)h+='<div class="card"><b>학원 메인 수정</b><input id="a1" value="'+q(A.h1)+'" placeholder="큰 제목"><input id="a2" value="'+q(A.hp)+'" placeholder="부제 문구"><input id="a3" value="'+q(A.it)+'" placeholder="소개 제목"><textarea id="a4" rows="3">'+esc(A.ib)+'</textarea><b>로고</b><input id="ln" value="'+q(D.ln||'햇살학원')+'" placeholder="학원 이름"><input id="lf" type="file" accept="image/*" onchange="setAm()"><b>상단 이미지</b><input id="af" type="file" accept="image/*" onchange="setAm()"><p><button class="btn" onclick="setAm()">저장</button></p><p class="mu">이미지는 데모에서 새로고침하면 사라집니다.</p></div>';
   h+='<div class="hero"'+(AI?' style="background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)),url(\''+AI+'\') center/cover"':'')+'><h1>'+esc(A.h1)+'</h1><p>'+esc(A.hp)+'</p></div>';
   h+='<div class="card"><h3>'+esc(A.it)+'</h3><p class="mu" style="white-space:pre-wrap">'+esc(A.ib)+'</p></div>';
+  if(teacher)h+='<div class="card"><b>신규 학생 추가</b><input id="sn" placeholder="학생 이름 (예: 박지호)"><p><button class="btn" onclick="addStu()">학생 추가</button></p><p class="mu">이름으로 개인 주소가 자동으로 만들어져요.</p></div>';
   h+='<div class="card"><h3>데모: 원생 개인 홈피 바로가기</h3><p class="mu">실제 운영에서는 이 목록이 공개되지 않고, 학부모께 개별 링크만 전달됩니다.</p>';
-  STU.forEach(function(s){h+='<p><a href="#'+s.c+'">'+s.n+' → /'+s.c+'</a></p>'});
+  STU.forEach(function(s,i){h+='<p><a href="#'+s.c+'">'+esc(s.n)+' → /'+s.c+'</a>'+(teacher?(cf===s.c?' <button class="btn" onclick="delStu()">삭제 확인</button> <button class="btn g" onclick="askDel(-1)">취소</button>':' <button class="btn g" onclick="askDel('+i+')">삭제</button>'):'')+'</p>'});
   h+='</div>';
  }else{
   var S=SUB[tab];
@@ -103,6 +104,10 @@ function addPh(){var st=cur(),el=document.getElementById('gf'),c=document.getEle
 function q(s){return esc(s).replace(/"/g,'&quot;')}
 function gv(i){return document.getElementById(i).value}
 function setAm(){var f=document.getElementById('af').files[0];D.am={h1:gv('a1'),hp:gv('a2'),it:gv('a3'),ib:gv('a4')};if(f)AI=URL.createObjectURL(f);D.ln=gv('ln');var lf=document.getElementById('lf').files[0];if(lf)LG=URL.createObjectURL(lf);save();render()}
+function askDel(i){cf=i<0?'':STU[i].c;render()}
+function delStu(){var c=cf;STU=STU.filter(function(s){return s.c!==c});D.st=(D.st||[]).filter(function(s){return s.c!==c});D.del=(D.del||[]).concat([c]);delete D.p[c];if(D.mm)delete D.mm[c];if(D.bt)Object.keys(D.bt).forEach(function(k){if(k.indexOf(c)===0)delete D.bt[k]});cf='';save();render()}
+function rom(s){var I=['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'],M=['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'],F=['','k','k','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','t'],o='',c,i;for(i=0;i<s.length;i++){c=s.charCodeAt(i);if(c>=44032&&c<=55203){c-=44032;o+=I[Math.floor(c/588)]+M[Math.floor(c%588/28)]+F[c%28]}else if(/[a-z0-9]/i.test(s[i]))o+=s[i].toLowerCase()}return o||'student'}
+function addStu(){var n=gv('sn').trim();if(!n)return;var k=Math.random().toString(36).slice(2,8),c=rom(n)+'-'+k,s={c:c,n:n};STU.push(s);D.st=D.st||[];D.st.push(s);D.p[c]={en:[],ma:[],ko:[]};save();render()}
 function pw(){return D.pw||'1234'}
 function tg(){if(!cur()){teacher=!teacher}else if(teacher){teacher=false;login=false}else if(authed){teacher=true}else{login=!login;perr=false}render()}
 function doLogin(){if(gv('pw')===pw()){authed=true;teacher=true;login=false;perr=false}else{perr=true}render()}
